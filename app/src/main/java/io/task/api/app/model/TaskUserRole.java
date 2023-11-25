@@ -26,7 +26,7 @@ public class TaskUserRole implements Serializable {
     private String roleTitle;
 
     @OneToMany(mappedBy = "role")
-    private List<TaskUser> appuserOwner;
+    private List<TaskUser> taskUserOwner;
     
     /** Default constructor. */
     public TaskUserRole() {
