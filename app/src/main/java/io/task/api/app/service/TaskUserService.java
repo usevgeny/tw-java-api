@@ -262,4 +262,9 @@ public class TaskUserService {
         return decryptedAppUser;
     }
 
+    public boolean isUserNameTaken(String encryptedUserName) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
 }

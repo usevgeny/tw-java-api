@@ -39,4 +39,9 @@ logging:
       io.task.api.app: DEBUG
 
 server:
-  port: 8080
+  port: 8443
+  ssl:
+    key-store: file:../keystore.jks
+    key-store-password: ${KEY_STORE_PASSWORD:test1test}
+    key-password: ${KEY_PASSWORD:test1test}
+    enabled: true

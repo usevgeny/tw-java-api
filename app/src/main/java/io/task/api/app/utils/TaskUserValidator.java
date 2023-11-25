@@ -58,6 +58,8 @@ public class TaskUserValidator implements Validator {
         } else if (!username.matches(AppConstants.NAME_REGEX)) {
             errors.rejectValue("userName", "", "Username can only contain alpha-numeric values");
             errors.rejectValue("userPhoneNumber", "", "Invalid phone number");
+        } else if (taskUserService.isUserExisting(taskUserService.getEncryptedUserName(taskUser))) {
+            errors.rejectValue("userName", "", "This name is already taken");
         }
     }
 

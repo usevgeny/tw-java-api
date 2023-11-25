@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
+import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,9 +62,9 @@ public class AuthController {
             BindingResult bindingResult) {
 
         LOGGER.info(appuserMiddleDTO.toString());
-        TaskUser appuser = convertToAppUserFromMiddleDTO(appuserMiddleDTO);
+        TaskUser taskUser = convertToAppUserFromMiddleDTO(appuserMiddleDTO);
 
-        taskUserValidator.validate(appuser, bindingResult);
+        taskUserValidator.validate(taskUser, bindingResult);
         // TODO appuserRolesValidator validatevalidate(appuserrole, bindingResult)
 
         if (bindingResult.hasErrors()) {
@@ -75,7 +76,7 @@ public class AuthController {
             }
             throw new UserNotCreatedException(errorMessage.toString());
         }
-
+        taskUserService.createTaskUser(taskUser);
         Map<String, String> reponseMap = new HashMap<>();
         reponseMap.put("status", String.valueOf(ResponseEntity.ok(HttpStatus.OK).getStatusCodeValue()));
         reponseMap.put("username", String.valueOf(appuserMiddleDTO.getUserName()));
@@ -84,7 +85,7 @@ public class AuthController {
     }
 
     @PostMapping(AppConstants.LOGIN_PATH)
-    public Map<String, String> performLogin(@RequestBody AuthenticationDTO authenticationDTO) {
+    public Map<String, String> performLogin(@Valid @RequestBody AuthenticationDTO authenticationDTO) {
 
         UsernamePasswordAuthenticationToken authInputToken = new UsernamePasswordAuthenticationToken(
                 taskUserService.getEncryptedData(authenticationDTO.getUsername()), authenticationDTO.getPassword());
@@ -159,7 +160,7 @@ public class AuthController {
 
     @ExceptionHandler
     private ResponseEntity<TaskApiAppError> handleException(UserNotCreatedException e) {
-        LOGGER.info(e.getMessage());
+        LOGGER.warning(e.getMessage());
         TaskApiAppError response = new TaskApiAppError(AppConstants.USER_WAS_NOT_CREATED,
                 System.currentTimeMillis());
         return new ResponseEntity<TaskApiAppError>(response, HttpStatus.BAD_REQUEST);
