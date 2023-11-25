@@ -4,6 +4,9 @@
 # Log file
 *.log
 
+# requests curls
+curls.sh
+
 # BlueJ files
 *.ctxt
 
