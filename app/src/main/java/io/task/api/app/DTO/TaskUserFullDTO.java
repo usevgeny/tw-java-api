@@ -8,12 +8,12 @@ public class TaskUserFullDTO extends TaskUserMiddleDTO {
     private TaskUserRolesBasicDTO role;
     public TaskUserFullDTO(int userId, String userName, String userEmail, @Size(min = 3, max = 500) String userPasshash,
             String userPhoneNumber, TaskUserRolesBasicDTO role) {
-        super(userId, userName, userEmail, userPasshash, userPhoneNumber);
+        super(userId, userName, userEmail, userPasshash);
         this.role = role;
     }
     public TaskUserFullDTO(int userId, String userName, String userEmail, @Size(min = 3, max = 500) String userPasshash,
             String userPhoneNumber) {
-        super(userId, userName, userEmail, userPasshash, userPhoneNumber);
+        super(userId, userName, userEmail, userPasshash);
         // TODO Auto-generated constructor stub
     }
     public TaskUserFullDTO(int userId, String userName, String userEmail) {

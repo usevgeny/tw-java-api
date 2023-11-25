@@ -30,7 +30,6 @@ import io.task.api.app.DTO.AuthenticationDTO;
 import io.task.api.app.DTO.TaskUserMiddleDTO;
 import io.task.api.app.model.TaskUser;
 import io.task.api.app.service.TaskUserService;
-import io.task.api.app.servicemetier.TaskUserManagementService;
 import io.task.api.app.utils.AppConstants;
 import io.task.api.app.utils.JWTUtil;
 import io.task.api.app.utils.TaskApiAppError;
@@ -44,12 +43,18 @@ public class AuthController {
 
     @Autowired
     private JWTUtil jwtUtil;
+
     @Autowired
     private ModelMapper modelMapper;
+
     @Autowired
     private AuthenticationManager authenticationManager;
+
     @Autowired
-    private TaskUserManagementService taskUserManagementService;
+    private TaskUserValidator taskUserValidator;
+
+    @Autowired
+    private TaskUserService taskUserService;
 
     @PostMapping(AppConstants.REGISTER_PATH)
     public Map<String, String> registerNewUser(@RequestBody TaskUserMiddleDTO appuserMiddleDTO,
@@ -70,11 +75,6 @@ public class AuthController {
             }
             throw new UserNotCreatedException(errorMessage.toString());
         }
-
-
-        
-        taskUserService.createTaskUser(appuser);
-        String token = jwtUtil.generateToken(appuserMiddleDTO.getUserName());
 
         Map<String, String> reponseMap = new HashMap<>();
         reponseMap.put("status", String.valueOf(ResponseEntity.ok(HttpStatus.OK).getStatusCodeValue()));
@@ -108,15 +108,11 @@ public class AuthController {
         return modelMapper.map(appuserMiddle, TaskUser.class);
     }
 
-    private TaskUserMiddleDTO convertToMiddleTaskUserDTO(TaskUser appuser) {
-        return modelMapper.map(appuser, TaskUserMiddleDTO.class);
-    }
-
     @ExceptionHandler
     private ResponseEntity<TaskApiAppError> handleException(JWTVerificationException e) {
         LOGGER.info(e.getMessage());
         TaskApiAppError response = new TaskApiAppError(e.getMessage(), System.currentTimeMillis());
-        return new ResponseEntity(response, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<TaskApiAppError>(response, HttpStatus.NOT_FOUND);
 
     }
 
@@ -124,7 +120,7 @@ public class AuthController {
     private ResponseEntity<TaskApiAppError> handleException(ServletException e) {
         LOGGER.info(e.getMessage());
         TaskApiAppError response = new TaskApiAppError(e.getMessage(), System.currentTimeMillis());
-        return new ResponseEntity(response, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<TaskApiAppError>(response, HttpStatus.NOT_FOUND);
 
     }
 
@@ -132,7 +128,7 @@ public class AuthController {
     private ResponseEntity<TaskApiAppError> handleException(IOException e) {
         LOGGER.info(e.getMessage());
         TaskApiAppError response = new TaskApiAppError(e.getMessage(), System.currentTimeMillis());
-        return new ResponseEntity(response, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<TaskApiAppError>(response, HttpStatus.NOT_FOUND);
 
     }
 
@@ -140,7 +136,7 @@ public class AuthController {
     private ResponseEntity<TaskApiAppError> handleException(AccessDeniedException e) {
         LOGGER.info(e.getMessage());
         TaskApiAppError response = new TaskApiAppError(e.getMessage(), System.currentTimeMillis());
-        return new ResponseEntity(response, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<TaskApiAppError>(response, HttpStatus.FORBIDDEN);
 
     }
 
@@ -148,7 +144,7 @@ public class AuthController {
     private ResponseEntity<TaskApiAppError> handleException(UserNotFoundException e) {
         TaskApiAppError response = new TaskApiAppError(AppConstants.USER_NOT_FOUND + " " + e.getMessage(),
                 System.currentTimeMillis());
-        return new ResponseEntity(response, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<TaskApiAppError>(response, HttpStatus.NOT_FOUND);
 
     }
 
@@ -157,7 +153,16 @@ public class AuthController {
         LOGGER.info(e.getMessage());
         TaskApiAppError response = new TaskApiAppError(AppConstants.USER_WITH_THIS_NAME_WAS_NOT_FOUND,
                 System.currentTimeMillis());
-        return new ResponseEntity(response, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<TaskApiAppError>(response, HttpStatus.NOT_FOUND);
+
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<TaskApiAppError> handleException(UserNotCreatedException e) {
+        LOGGER.info(e.getMessage());
+        TaskApiAppError response = new TaskApiAppError(AppConstants.USER_WAS_NOT_CREATED,
+                System.currentTimeMillis());
+        return new ResponseEntity<TaskApiAppError>(response, HttpStatus.BAD_REQUEST);
 
     }
 
