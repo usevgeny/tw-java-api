@@ -1,0 +1,42 @@
+# dataSource configs
+spring:
+  datasource:
+    username: admin
+    password: admin1234
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/task_api_db
+  output:
+    ansi:
+      console-available: true
+  application:
+    name: task-api
+
+# Hibernate configs
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        show_sql: 'true'
+# in order to allow HTTP methods PUT, PATCH, DELETE 
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: 'true'
+
+
+application:
+  api:
+    hash:
+      salt: ${SALT}
+    otp:
+      validTime: '31536000000'
+    encryption: ${ENCRYPTION_KEY}
+  jwt_secret: ${JWT_SECRET}
+
+logging:
+  level:
+      ROOT: DEBUG
+      io.task.api.app: DEBUG
+
+server:
+  port: 8080

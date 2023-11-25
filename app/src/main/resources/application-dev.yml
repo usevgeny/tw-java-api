@@ -1,0 +1,8 @@
+application:
+  api:
+    hash:
+      salt: "random"
+    otp:
+      validTime: '31536000000'
+    encryption: "yvsE`6Z8cJITGDwAd7HM:QL\\?j;my1ed"
+  jwt_secret: "HJKiUNuby9!hn&1hbnk"
