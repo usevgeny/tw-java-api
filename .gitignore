@@ -6,7 +6,7 @@
 
 # requests curls
 curls.sh
-
+./tests
 # BlueJ files
 *.ctxt
 
