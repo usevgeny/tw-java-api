@@ -1,6 +1,6 @@
 package io.task.api.app.utils;
 
-public class TaskApiAppError {
+public class TaskApiAppError extends RuntimeException{
     private String message;
     private long timestamp;
 
@@ -8,6 +8,11 @@ public class TaskApiAppError {
         super();
         this.message = message;
         this.timestamp = timestamp;
+    }
+
+    public TaskApiAppError(String message) {
+        // TODO Auto-generated constructor stub
+        this.message = message;
     }
 
     @Override
