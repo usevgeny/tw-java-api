@@ -6,6 +6,7 @@
 
 # requests curls
 curls.sh
+taskEncryption.sh
 ./tests
 # BlueJ files
 *.ctxt
