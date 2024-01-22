@@ -32,7 +32,6 @@ public class JWTFilter extends OncePerRequestFilter {
     @Autowired
     private final AlgoAES algoAes;
 
-    @Autowired
     private JWTFilter(JWTUtil jwtUtil, PersonDetailsService personDetailsService, AlgoAES algoAes) {
         super();
         this.jwtUtil = jwtUtil;
@@ -47,14 +46,15 @@ public class JWTFilter extends OncePerRequestFilter {
         LOGGER.info("Started authentication process");
         String authHeader = request.getHeader(AppConstants.JWT_TOKEN_HEADER);
 
-        if (authHeader != null && !authHeader.trim().isEmpty() && authHeader.startsWith(AppConstants.TOKEN_PREFIX)) {
+        if (authHeader != null && !authHeader.trim().isEmpty()
+                && authHeader.startsWith(AppConstants.TOKEN_PREFIX)) {
 
             String jwt = authHeader.substring(7);
 
             if (jwt.trim().isEmpty()) {
                 LOGGER.info("JWT is empty");
                 response.setContentType("application/json");
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);  
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().write(AppConstants.JSON_INVALID_JWT);
                 return;
             } else {
@@ -62,22 +62,23 @@ public class JWTFilter extends OncePerRequestFilter {
                 try {
                     String transparentUserName = jwtUtil.validateTokenAndRetrieveClaim(jwt);
                     LOGGER.info("Logged in user: " + transparentUserName);
-                    UserDetails userdetails = personDetailsService.loadUserByUsername(algoAes.encrypt(transparentUserName));
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userdetails,
+                    UserDetails userdetails = personDetailsService
+                            .loadUserByUsername(algoAes.encrypt(transparentUserName));
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userdetails,
                             userdetails.getPassword(), userdetails.getAuthorities());
 
                     if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                        
+
                         SecurityContextHolder.getContext().setAuthentication(authToken);
                     }
                 } catch (JWTVerificationException e) {
                     LOGGER.info("JWT verification exception: " + response.SC_BAD_REQUEST + " " + e.getMessage());
                     response.setContentType("application/json");
-                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);  
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     response.getWriter().write(AppConstants.JSON_INVALID_JWT);
                     return;
-                    
-                    
+
                 }
 
             }
