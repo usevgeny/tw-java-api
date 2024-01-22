@@ -37,7 +37,7 @@ import io.task.api.app.service.TaskUserService;
 import io.task.api.app.utils.AppConstants;
 import io.task.api.app.utils.DataNotDecryptedException;
 import io.task.api.app.utils.DataNotEncryptedException;
-import io.task.api.app.utils.TaskApiAppError;
+import io.task.api.app.utils.TaskApiException;
 import io.task.api.app.utils.PasswordNotChangedException;
 import io.task.api.app.utils.UserNotCreatedException;
 import io.task.api.app.utils.UserNotFoundException;
@@ -137,64 +137,64 @@ public class TaskUserController {
     }
 
     @ExceptionHandler
-    private ResponseEntity<TaskApiAppError> handleException(AccessDeniedException e) {
-        TaskApiAppError response = new TaskApiAppError(AppConstants.ACCESS_DENIED + " " + e.getMessage(),
+    private ResponseEntity<TaskApiException> handleException(AccessDeniedException e) {
+        TaskApiException response = new TaskApiException(AppConstants.ACCESS_DENIED + " " + e.getMessage(),
                 System.currentTimeMillis());
         return new ResponseEntity(response, HttpStatus.FORBIDDEN);
 
     }
 
     @ExceptionHandler
-    private ResponseEntity<TaskApiAppError> handleException(JWTVerificationException e) {
-        TaskApiAppError response = new TaskApiAppError(AppConstants.FORBIDDEN_MESSAGE + " " + e.getMessage(),
+    private ResponseEntity<TaskApiException> handleException(JWTVerificationException e) {
+        TaskApiException response = new TaskApiException(AppConstants.FORBIDDEN_MESSAGE + " " + e.getMessage(),
                 System.currentTimeMillis());
         return new ResponseEntity(response, HttpStatus.FORBIDDEN);
 
     }
 
     @ExceptionHandler
-    private ResponseEntity<TaskApiAppError> handleException(UserNotFoundException e) {
-        TaskApiAppError response = new TaskApiAppError(AppConstants.USER_WITH_THIS_NAME_WAS_NOT_FOUND,
+    private ResponseEntity<TaskApiException> handleException(UserNotFoundException e) {
+        TaskApiException response = new TaskApiException(AppConstants.USER_WITH_THIS_NAME_WAS_NOT_FOUND,
                 System.currentTimeMillis());
         return new ResponseEntity(response, HttpStatus.NOT_FOUND);
 
     }
 
     @ExceptionHandler
-    private ResponseEntity<TaskApiAppError> handleException(UserNotCreatedException e) {
-        TaskApiAppError response = new TaskApiAppError(AppConstants.USER_WAS_NOT_CREATED + e.getMessage(),
+    private ResponseEntity<TaskApiException> handleException(UserNotCreatedException e) {
+        TaskApiException response = new TaskApiException(AppConstants.USER_WAS_NOT_CREATED + e.getMessage(),
                 System.currentTimeMillis());
         return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
 
     }
 
     @ExceptionHandler
-    private ResponseEntity<TaskApiAppError> handleException(UserNotUpdatedException e) {
-        TaskApiAppError response = new TaskApiAppError(AppConstants.USER_NOT_UPDATED + e.getMessage(),
+    private ResponseEntity<TaskApiException> handleException(UserNotUpdatedException e) {
+        TaskApiException response = new TaskApiException(AppConstants.USER_NOT_UPDATED + e.getMessage(),
                 System.currentTimeMillis());
         return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
 
     }
 
     @ExceptionHandler
-    private ResponseEntity<TaskApiAppError> handleException(PasswordNotChangedException e) {
-        TaskApiAppError response = new TaskApiAppError(AppConstants.PASSWORD_NOT_CHANGED + e.getMessage(),
+    private ResponseEntity<TaskApiException> handleException(PasswordNotChangedException e) {
+        TaskApiException response = new TaskApiException(AppConstants.PASSWORD_NOT_CHANGED + e.getMessage(),
                 System.currentTimeMillis());
         return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
 
     }
 
     @ExceptionHandler
-    private ResponseEntity<TaskApiAppError> handleException(DataNotEncryptedException e) {
-        TaskApiAppError response = new TaskApiAppError(AppConstants.USER_DATA_WAS_NOT_ENCRYPTED,
+    private ResponseEntity<TaskApiException> handleException(DataNotEncryptedException e) {
+        TaskApiException response = new TaskApiException(AppConstants.USER_DATA_WAS_NOT_ENCRYPTED,
                 System.currentTimeMillis());
         return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
 
     }
 
     @ExceptionHandler
-    private ResponseEntity<TaskApiAppError> handleException(DataNotDecryptedException e) {
-        TaskApiAppError response = new TaskApiAppError(AppConstants.DATA_HAS_NOT_BEEN_DECRYPTED,
+    private ResponseEntity<TaskApiException> handleException(DataNotDecryptedException e) {
+        TaskApiException response = new TaskApiException(AppConstants.DATA_HAS_NOT_BEEN_DECRYPTED,
                 System.currentTimeMillis());
         return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
 
