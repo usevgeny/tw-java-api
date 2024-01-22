@@ -1,4 +1,5 @@
 package io.task.api.app.service;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,15 +8,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.task.api.app.model.Task;
-import io.task.api.app.utils.TaskApiAppError;
+import io.task.api.app.utils.TaskApiException;
 
+@Service
 public class TaskService {
 
     private final String PARAM_EXPORT = " export";
@@ -51,8 +55,13 @@ public class TaskService {
     private final String PARAM_DONE = "done";
     // waits until a specific date before showing in a backlog
     private final String ADD_TASK = "add";
+    private final String ALL_TASKS = "all";
+    private final String ACTIVE_TASKS = "next";
 
-    public String executeCommand(String args, String input) throws TaskApiAppError {
+    @Value("${task.source}")
+    private String taskSource;
+
+    public String executeCommand(String args, String input) throws TaskApiException {
         try {
             // Construct the Taskwarrior command
 //            String command = String.format(
@@ -68,7 +77,7 @@ public class TaskService {
 
             // Set encoding, max buffer, and optional input
             processBuilder.environment().put("LANG", "en_US.UTF-8");
-            processBuilder.environment().put("TASKDATA", "/home/evgeny/PROJECTS/TaskApi/tests/");
+            processBuilder.environment().put("TASKDATA", taskSource);
             processBuilder.redirectErrorStream(true);
             processBuilder.redirectInput(ProcessBuilder.Redirect.PIPE);
             processBuilder.redirectOutput(ProcessBuilder.Redirect.PIPE);
@@ -95,36 +104,49 @@ public class TaskService {
             }
 
         } catch (IOException e) {
-            throw new TaskApiAppError("Task command error" + e.getMessage());
+            throw new TaskApiException("Task command error" + e.getMessage());
         }
     }
 
-    private Task getTaskById(String id) throws JsonMappingException, JsonProcessingException, TaskApiAppError {
+    public Task getTaskById(String id) throws JsonMappingException, JsonProcessingException, TaskApiException {
         String query = id.concat(PARAM_EXPORT);
         List<Task> singleTaskLisk = stringToListOfTasks(executeCommand(query, null));
-        if (!singleTaskLisk.isEmpty()){
+        if (!singleTaskLisk.isEmpty()) {
             return singleTaskLisk.get(0);
         }
         return null;
     };
 
-    private List<Task> getTasksByProject(String projectName) throws JsonMappingException, JsonProcessingException, TaskApiAppError {
+    public List<Task> getTasksByProject(String projectName)
+            throws JsonMappingException, JsonProcessingException, TaskApiException {
         String query = String.format((PARAM_PROJECT), projectName).concat(PARAM_EXPORT);
         return stringToListOfTasks(executeCommand(query, null));
     }
 
-    private List<Task> findTasks(String query) {
-        return null;
+    public List<Task> getAllTasks() throws JsonMappingException, TaskApiException {
+        String query = String.format(PARAM_EXPORT).concat(" ").concat(ALL_TASKS);
+        return stringToListOfTasks(executeCommand(query, null));
     }
 
-    private List<Task> stringToListOfTasks(String receivedInput) throws JsonMappingException, JsonProcessingException {
+    public List<Task> getAllActive() throws JsonMappingException, TaskApiException {
+        String query = String.format(PARAM_EXPORT).concat(" ").concat(ACTIVE_TASKS);
+        return stringToListOfTasks(executeCommand(query, null));
+    }
+
+    public List<Task> stringToListOfTasks(String receivedInput) throws TaskApiException, JsonMappingException {
         receivedInput = receivedInput.replace("\n", "").trim();
         String jsonString = extractJsonSubstring(receivedInput);
 //        return  parseJson(jsonString, Task.class);
-        return  parseListOfTasks(jsonString);
+        List<Task> tasks = new ArrayList<>();
+        try {
+            tasks = parseListOfTasks(jsonString);
+        } catch (JsonProcessingException e) {
+            throw new TaskApiException("Json parsing error");
+        }
+        return tasks;
     }
 
-    private String extractJsonSubstring(String input) {
+    public String extractJsonSubstring(String input) {
         List<String> patterns = List.of("\\[.*?\\}]", "\\[.*?\\]", "\\{.*?\\}");
         for (String pattern : patterns) {
             Pattern jsonPattern = Pattern.compile(pattern);
@@ -135,16 +157,12 @@ public class TaskService {
         }
         return null;
     }
-    
-    public static List<Task> parseListOfTasks (String jsonString) throws JsonMappingException, JsonProcessingException{
-        ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(jsonString, new TypeReference<List<Task>>(){});
-    }
 
-//    public static <T> List<T> parseJson(String jsonString, Class<T> valueType) throws JsonMappingException, JsonProcessingException {
-//        ObjectMapper objectMapper = new ObjectMapper();
-//                return objectMapper.readValue(jsonString, new TypeReference<List<T>>(){});
-//        }
+    public static List<Task> parseListOfTasks(String jsonString) throws JsonMappingException, JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(jsonString, new TypeReference<List<Task>>() {
+        });
+    }
 
     public static void main(String[] args) throws JsonMappingException, JsonProcessingException {
         TaskService handler = new TaskService();
@@ -152,9 +170,9 @@ public class TaskService {
         try {
             String result = handler.executeCommand("export", null);
             System.out.println(handler.stringToListOfTasks(result));
-//            System.out.println(handler.getTaskById("2"));
+            System.out.println(handler.getTaskById("35"));
 //            System.out.println(handler.getTasksByProject("MidJourney"));
-        } catch (TaskApiAppError e) {
+        } catch (TaskApiException e) {
             System.err.println("Error: " + e.getMessage());
             e.printStackTrace();
         }
