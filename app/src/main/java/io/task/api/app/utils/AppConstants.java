@@ -17,6 +17,11 @@ public class AppConstants {
     public static final String SUPER_USER_PATH = ROOT_APP_PATH + "/superuser/{username}/manage";
     public static final String USER_PATH = ROOT_APP_PATH + "/user";
     public static final String USER_MANAGE_PATH = USER_PATH+"/manage";
+    public static final String TASKS_PATH = ROOT_APP_PATH+"/tasks";
+    public static final String TASK_PATH = TASKS_PATH+"/{id}";
+    public static final String PROJECT_PATH = TASKS_PATH+"/project/{projectName}";
+    public static final String ALL_TASKS_PATH = TASKS_PATH+"/all";
+    public static final String ACTIVE_TASKS_PATH = TASKS_PATH+"/active";
 
     public static final String USER_CHANGE_PASS_PATH = USER_MANAGE_PATH+"/changepass";
     public static final String GALLERY_PATH = USER_PATH + "/{username}/galleries";
@@ -87,6 +92,7 @@ public class AppConstants {
     public static final String FULL_AUTHENTICATION_REQUIRED = "Full authentication is required to access this page";
     public static final String ACCESS_DENIED = "/access_denied";
     public static final String JSON_INVALID_JWT = "{ \"error\": \"Unauthorized\", \"message\": \""+AppConstants.INVALID_JWT_TOKEN+"\"} ";
+    public static final String FULL_AUTHENTICATION = "{ \"error\": \"Unauthorized\", \"message\": \""+"Full Authentication required "+"\"} ";
     public static final String PASSWORD_NOT_CHANGED = "Password change failed ";
 
     public static final String REQUEST_STATUS = "request status: ";

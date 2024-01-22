@@ -1,16 +1,17 @@
 package io.task.api.app.utils;
 
-public class TaskApiAppError extends RuntimeException{
+public class TaskApiException extends RuntimeException{
+    private static final long serialVersionUID = 1L;
     private String message;
     private long timestamp;
 
-    public TaskApiAppError(String message, long timestamp) {
+    public TaskApiException(String message, long timestamp) {
         super();
         this.message = message;
         this.timestamp = timestamp;
     }
 
-    public TaskApiAppError(String message) {
+    public TaskApiException(String message) {
         // TODO Auto-generated constructor stub
         this.message = message;
     }
