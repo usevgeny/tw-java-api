@@ -2,11 +2,13 @@ package io.task.api.app.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Task {
     @JsonProperty("id")
     String id;
@@ -32,6 +34,8 @@ public class Task {
     String uuid;
     @JsonProperty("score")
     Float score;
+    @JsonProperty("priority")
+    String priority;
     @JsonProperty("effort")
     String effort;
     @JsonProperty("urgency")
