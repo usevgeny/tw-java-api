@@ -1,3 +1,4 @@
+---
 # dataSource configs
 spring:
   datasource:
@@ -11,13 +12,13 @@ spring:
   application:
     name: task-api
 
-# Hibernate configs
+  # Hibernate configs
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         show_sql: 'true'
-# in order to allow HTTP methods PUT, PATCH, DELETE 
+  # in order to allow HTTP methods PUT, PATCH, DELETE
   mvc:
     hiddenmethod:
       filter:
@@ -35,8 +36,8 @@ application:
 
 logging:
   level:
-      ROOT: DEBUG
-      io.task.api.app: INFO
+    ROOT: DEBUG
+    io.task.api.app: INFO
 
 server:
   port: 8443
@@ -45,3 +46,14 @@ server:
     key-store-password: ${KEY_STORE_PASSWORD:test1test}
     key-password: ${KEY_PASSWORD:test1test}
     enabled: true
+  tomcat:
+    keep-alive-timeout: 1000 # This is the time in milliseconds that the Tomcat server will wait for another HTTP request before closing the connection
+    keep-alive-max-requests: 200 # This is the maximum number of HTTP requests that the Tomcat server will allow on a keep-alive connection before closing the connection
+    use-keep-alive: true # This enables keep-alive connections
+
+multithread:
+  number: '8'
+task:
+  password: 'iY/tZsdC+rdC4Tt2klCnmfzE70jgHI6A'
+  source: '/home/evgeny/PROJECTS/TaskApi/tests'
+  recipient: 'tasks@usachev.fr'
